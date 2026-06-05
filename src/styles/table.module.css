@@ -1,0 +1,35 @@
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0px;
+    border-radius: 0.5rem;
+    border: 1px solid #d4d4d8;
+}
+
+.tableRow {
+    border-collapse: separate;
+    border-spacing: 0px;
+
+    &:not(:last-child) .tableData {
+        border-bottom: 1px solid #d4d4d8;
+    }
+}
+
+.tableHeading {
+    border-collapse: separate;
+    border-spacing: 0px;
+    padding: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: bold;
+    border-bottom: 1px solid #d4d4d8;
+    text-align: left;
+}
+
+.tableData {
+    border-collapse: separate;
+    border-spacing: 0px;
+    padding: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+}

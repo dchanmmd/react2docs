@@ -1,0 +1,13 @@
+.layout {
+    width: 100%;
+    display: flex;
+    gap: 3rem;
+    min-height: 100vh;
+}
+
+.document {
+    flex: 1;
+    max-width: 900px;
+    padding: 2rem;
+    min-width: 0;
+}

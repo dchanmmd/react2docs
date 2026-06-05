@@ -1,0 +1,44 @@
+.pre {
+    display: block;
+    position: relative;
+    border-radius: 0.25rem;
+    background-color: #fafafa;
+    border: 1px solid #d4d4d8;
+    overflow: hidden;
+
+    & .copy {
+        position: absolute;
+        z-index: 1;
+        top: 0.5rem;
+        right: 0.5rem;
+        opacity: 0;
+        user-select: none;
+        pointer-events: none;
+        transition: all 150ms linear;
+        background-color: transparent;
+        border: none;
+        padding: 0.25rem;
+
+        & .copyIcon {
+            fill: #52525b;
+            height: 1rem;
+            width: 1rem;
+        }
+    }
+
+    &:hover .copy {
+        opacity: 1;
+        user-select: all;
+        pointer-events: all;
+    }
+
+    & .code {
+        display: block;
+        height: 100%;
+        width: 100%;
+        overflow: auto;
+        padding: 1rem;
+    }
+
+}
+

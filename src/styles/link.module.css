@@ -1,0 +1,11 @@
+.link {
+    display: inline;
+    text-decoration: none;
+    color: #60a5fa;
+    &:hover {
+        text-decoration: underline;
+    }
+    &:visited {
+        color: #8b5cf6;
+    }
+}
