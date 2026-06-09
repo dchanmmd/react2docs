@@ -7,7 +7,7 @@ const DOCS_DIR = "public/docs";
 
 function toTitle(slug) {
     return slug
-        .replaceAll(/-+/, " ")
+        .replaceAll(/-+/g, " ")
         .split(" ")
         .map(w => (w.at(0) ?? "").toUpperCase() + w.slice(1).toLowerCase())
         .join(" ");
