@@ -1,40 +1,75 @@
 # React2Docs
 
-A React documentation viewer that fetches Markdown files from a GitHub repository and renders them as a browsable, styled docs site. Deployed to GitHub Pages via GitHub Actions.
+A React documentation viewer that renders Markdown files as a browsable, styled docs site. Designed to be used as a build tool by repositories that want to publish their own docs to GitHub Pages.
 
 ## How it works
 
-On each push to `main`, the CI workflow:
+react2docs exposes `public/docs/` as an injection point. The calling repository:
 
-1. Runs `scripts/fetchDocs.js` to pull every `.md` file from a configured path in a target GitHub repo and write them to `public/docs/`, along with a `manifest.json` index.
-2. Builds the Vite app.
-3. Deploys the `dist/` folder to GitHub Pages.
+1. Clones react2docs.
+2. Copies its `.md` files into `react2docs/public/docs/`.
+3. Runs `npm run build:docs`, which generates `manifest.json` from the files present and then builds the Vite app.
+4. Deploys `dist/` to its own GitHub Pages.
 
-The app reads `manifest.json` at runtime to populate the navigation sidebar, then fetches individual `.md` files on demand as the user navigates.
+## Calling repository setup
 
-## Repository variables and secrets
+Add this workflow to `.github/workflows/docs.yml` in any repository with Markdown docs:
 
-Configure these in **Settings → Secrets and variables → Actions** on the repository hosting this project.
+```yaml
+name: Deploy Docs
+on:
+  push:
+    branches: [main]
 
-| Name | Type | Description |
-|---|---|---|
-| `PAT` | Secret | GitHub Personal Access Token with `repo` (read) scope for the source repository |
-| `REPO_PATH` | Variable | Source repository in `owner/repo` format, e.g. `acme/internal-docs` |
-| `DOCS_PATH` | Variable | Path inside the source repository where `.md` files live, e.g. `docs` or `content/pages` |
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: dchanmmd/react2docs
+          path: react2docs
+
+      - run: cp docs/*.md react2docs/public/docs/
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: react2docs/package-lock.json
+
+      - run: npm ci
+        working-directory: react2docs
+
+      - run: npm run build:docs
+        working-directory: react2docs
+        env:
+          APP_BASE_URL: /${{ github.event.repository.name }}/
+
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: react2docs/dist
+```
+
+In the calling repository's **Settings → Pages**, set the source to the `gh-pages` branch. No secrets or tokens beyond the default `GITHUB_TOKEN` are required.
 
 ## Local development
 
-To run the app locally you need a populated `public/docs/` directory. Either run the fetch script or create the files manually.
-
-### Option A — run the fetch script
+Populate `public/docs/` with `.md` files, then:
 
 ```bash
-PAT=ghp_... REPO_PATH=owner/repo DOCS_PATH=docs node scripts/fetchDocs.js
+npm install
+npm run build:docs   # generates manifest.json and builds
+npm run preview
 ```
 
-### Option B — add docs manually
-
-Create `public/docs/manifest.json`:
+Or skip the manifest step during active development by creating `public/docs/manifest.json` manually:
 
 ```json
 [
@@ -43,14 +78,7 @@ Create `public/docs/manifest.json`:
 ]
 ```
 
-Then place the corresponding `.md` files at `public/docs/getting-started.md`, etc.
-
-### Start the dev server
-
-```bash
-npm install
-npm run dev
-```
+Then run `npm run dev` as usual.
 
 ## Features
 
